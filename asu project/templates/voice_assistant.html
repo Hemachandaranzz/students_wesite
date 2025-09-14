@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Assistant - Lumora AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .voice-assistant-app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .app-header {
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4);
+        }
+
+        .logo-text h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .logo-text span {
+            font-size: 14px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #8b5cf6;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            color: #a78bfa;
+            transform: translateX(-2px);
+        }
+
+        .settings-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #374151;
+            border-radius: 12px;
+            color: #9ca3af;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .settings-btn:hover {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+        }
+
+        /* Main Content */
+        .app-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+        }
+
+        .chat-container {
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        /* Welcome Message */
+        .welcome-message {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 20px;
+            padding: 32px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            max-width: 600px;
+            animation: slideInUp 0.6s ease;
+        }
+
+        .welcome-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            margin: 0 auto 24px;
+            box-shadow: 0 12px 40px rgba(139, 92, 246, 0.3);
+        }
+
+        .welcome-content h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .welcome-content p {
+            font-size: 16px;
+            color: #e5e7eb;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .welcome-features {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-item i {
+            font-size: 24px;
+            color: #8b5cf6;
+        }
+
+        .feature-item span {
+            font-size: 14px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        /* Voice Controls */
+        .voice-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .language-selector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .language-selector label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .language-dropdown {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 12px 20px;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            appearance: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            min-width: 200px;
+        }
+
+        .language-dropdown:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .language-dropdown option {
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 12px;
+        }
+
+        /* Voice Button */
+        .voice-button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .voice-button {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .voice-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 25px 50px rgba(139, 92, 246, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .voice-button:active {
+            transform: scale(0.95);
+        }
+
+        .voice-button-inner {
+            position: relative;
+            z-index: 2;
+        }
+
+        .voice-button i {
+            font-size: 48px;
+        }
+
+        .voice-waves {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .wave {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid rgba(139, 92, 246, 0.4);
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        .wave.wave-1 { width: 100px; height: 100px; animation: wave 2s infinite 0s; }
+        .wave.wave-2 { width: 120px; height: 120px; animation: wave 2s infinite 0.2s; }
+        .wave.wave-3 { width: 140px; height: 140px; animation: wave 2s infinite 0.4s; }
+        .wave.wave-4 { width: 160px; height: 160px; animation: wave 2s infinite 0.6s; }
+        .wave.wave-5 { width: 180px; height: 180px; animation: wave 2s infinite 0.8s; }
+
+        @keyframes wave {
+            0% { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0.8);
+                border-color: rgba(139, 92, 246, 0.2);
+            }
+            50% { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1);
+                border-color: rgba(139, 92, 246, 0.6);
+            }
+            100% { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(1.2);
+                border-color: rgba(139, 92, 246, 0.1);
+            }
+        }
+
+        .stop-button {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 30px rgba(239, 68, 68, 0.4);
+        }
+
+        .stop-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(239, 68, 68, 0.6);
+        }
+
+        .stop-button i {
+            font-size: 24px;
+        }
+
+        /* Status */
+        .status-display {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 16px;
+            padding: 16px 24px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #374151;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Voice Settings Panel */
+        .voice-settings-panel {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            min-width: 280px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .voice-settings-panel.show {
+            transform: translateY(0);
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .settings-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .settings-close {
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #374151;
+            border-radius: 8px;
+            color: #9ca3af;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .settings-close:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        .setting-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .setting-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #e5e7eb;
+            margin-bottom: 8px;
+        }
+
+        .setting-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #374151;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .setting-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+        }
+
+        .setting-group input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+        }
+
+        .range-value {
+            display: block;
+            text-align: right;
+            font-size: 12px;
+            color: #8b5cf6;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* Animations */
+        .voice-button.listening {
+            animation: listeningPulse 1.5s ease-in-out infinite;
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            box-shadow: 0 25px 50px rgba(6, 182, 212, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes listeningPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 25px 50px rgba(6, 182, 212, 0.6);
+            }
+            50% { 
+                transform: scale(1.1); 
+                box-shadow: 0 30px 60px rgba(6, 182, 212, 0.8);
+            }
+        }
+
+        .voice-button.listening .wave {
+            animation-play-state: running;
+        }
+
+        .voice-button:not(.listening) .wave {
+            animation-play-state: paused;
+        }
+
+        .voice-button.speaking {
+            animation: speakingGlow 2s ease-in-out infinite;
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        @keyframes speakingGlow {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 25px 50px rgba(16, 185, 129, 0.4);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 30px 60px rgba(16, 185, 129, 0.6);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 16px;
+            }
+            
+            .logo-text h1 {
+                font-size: 24px;
+            }
+            
+            .app-main {
+                padding: 20px 16px;
+            }
+            
+            .welcome-message {
+                padding: 24px;
+            }
+            
+            .welcome-features {
+                gap: 24px;
+            }
+            
+            .voice-button {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .voice-button i {
+                font-size: 40px;
+            }
+            
+            .voice-settings-panel {
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="voice-assistant-app">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>Voice Assistant</h1>
+                        <span>Powered by Lumora AI</span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="settings-btn" id="settingsBtn">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <a href="{{ url_for('welcome') }}" class="back-btn">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <div class="chat-container">
+                <!-- Welcome Message -->
+                <div class="welcome-message">
+                    <div class="welcome-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="welcome-content">
+                        <h3>Hello! I'm Lumora</h3>
+                        <p>Your AI voice assistant. Click the microphone and start talking to me!</p>
+                        <div class="welcome-features">
+                            <div class="feature-item">
+                                <i class="fas fa-microphone"></i>
+                                <span>Voice Input</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-globe"></i>
+                                <span>Multi-language</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Voice Output</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Controls -->
+                <div class="voice-controls">
+                    <!-- Language Selector -->
+                    <div class="language-selector">
+                        <label for="languageSelect">Language</label>
+                        <select id="languageSelect" class="language-dropdown">
+                            <option value="en">🇺🇸 English</option>
+                            <option value="ta">🇮🇳 தமிழ் (Tamil)</option>
+                            <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+                            <option value="te">🇮🇳 తెలుగు (Telugu)</option>
+                            <option value="kn">🇮🇳 ಕನ್ನಡ (Kannada)</option>
+                            <option value="ml">🇮🇳 മലയാളം (Malayalam)</option>
+                        </select>
+                    </div>
+
+                    <!-- Voice Button -->
+                    <div class="voice-button-container">
+                        <button class="voice-button" id="voiceButton">
+                            <div class="voice-button-inner">
+                                <i class="fas fa-microphone" id="micIcon"></i>
+                                <div class="voice-waves">
+                                    <div class="wave wave-1"></div>
+                                    <div class="wave wave-2"></div>
+                                    <div class="wave wave-3"></div>
+                                    <div class="wave wave-4"></div>
+                                    <div class="wave wave-5"></div>
+                                </div>
+                            </div>
+                        </button>
+                        
+                        <button class="stop-button" id="stopButton" style="display: none;">
+                            <i class="fas fa-stop"></i>
+                        </button>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="status-display" id="statusDisplay">
+                        <span>Click the microphone to start talking</span>
+                    </div>
+                    
+                    <!-- Debug Info (hidden by default) -->
+                    <div class="debug-info" id="debugInfo" style="display: none; margin-top: 16px; padding: 12px; background: rgba(0,0,0,0.5); border-radius: 8px; font-size: 12px; color: #9ca3af;">
+                        <div>Browser: <span id="browserInfo"></span></div>
+                        <div>Speech Recognition: <span id="speechRecognitionInfo"></span></div>
+                        <div>Microphone: <span id="microphoneInfo"></span></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Voice Settings Panel -->
+        <div class="voice-settings-panel" id="voiceSettingsPanel">
+            <div class="settings-header">
+                <h3>Voice Settings</h3>
+                <button class="settings-close" id="settingsClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="settings-body">
+                <div class="setting-group">
+                    <label for="voiceSpeed">Speech Speed</label>
+                    <input type="range" id="voiceSpeed" min="0.5" max="2" step="0.1" value="0.95">
+                    <span class="range-value" id="speedValue">0.95x</span>
+                </div>
+                <div class="setting-group">
+                    <label for="voicePitch">Voice Pitch</label>
+                    <input type="range" id="voicePitch" min="0.5" max="2" step="0.1" value="1.05">
+                    <span class="range-value" id="pitchValue">1.05</span>
+                </div>
+                <div class="setting-group">
+                    <label for="voiceVolume">Volume</label>
+                    <input type="range" id="voiceVolume" min="0" max="1" step="0.1" value="0.9">
+                    <span class="range-value" id="volumeValue">90%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Voice Assistant JavaScript for Standalone Page
+        class StandaloneVoiceAssistant {
+            constructor() {
+                this.isListening = false;
+                this.isSpeaking = false;
+                this.recognition = null;
+                this.synthesis = null;
+                this.currentLanguage = 'en';
+                this.sessionId = 'voice_' + Date.now();
+                this.voices = [];
+                this.settings = {
+                    speed: 0.95,   // Slightly slower for smooth, clear speech (like ChatGPT)
+                    pitch: 1.05,   // Slightly higher pitch for pleasant female voice
+                    volume: 0.9
+                };
+                
+                this.init();
+            }
+
+            init() {
+                this.setupSpeechRecognition();
+                this.setupSpeechSynthesis();
+                this.setupEventListeners();
+                this.updateRangeValues();
+                this.showDebugInfo();
+                console.log('Standalone Voice Assistant initialized successfully!');
+            }
+
+            showDebugInfo() {
+                // Show browser and speech recognition support info
+                const browserInfo = document.getElementById('browserInfo');
+                const speechRecognitionInfo = document.getElementById('speechRecognitionInfo');
+                const microphoneInfo = document.getElementById('microphoneInfo');
+                
+                if (browserInfo) {
+                    browserInfo.textContent = navigator.userAgent.includes('Chrome') ? 'Chrome ✅' : 
+                                            navigator.userAgent.includes('Edge') ? 'Edge ✅' : 
+                                            navigator.userAgent.includes('Safari') ? 'Safari ⚠️' : 'Other ⚠️';
+                }
+                
+                if (speechRecognitionInfo) {
+                    const hasRecognition = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+                    speechRecognitionInfo.textContent = hasRecognition ? 'Supported ✅' : 'Not Supported ❌';
+                }
+                
+                if (microphoneInfo) {
+                    microphoneInfo.textContent = navigator.mediaDevices ? 'Available ✅' : 'Not Available ❌';
+                }
+                
+                // Show debug info if there are issues
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                    document.getElementById('debugInfo').style.display = 'block';
+                }
+            }
+
+            setupSpeechRecognition() {
+                if ('webkitSpeechRecognition' in window) {
+                    this.recognition = new webkitSpeechRecognition();
+                } else if ('SpeechRecognition' in window) {
+                    this.recognition = new SpeechRecognition();
+                } else {
+                    console.warn('Speech recognition not supported in this browser');
+                    this.updateStatus('Speech recognition not supported. Please use Chrome or Edge.');
+                    return;
+                }
+
+                if (this.recognition) {
+                    // Enhanced speech recognition settings for better waiting
+                    this.recognition.continuous = false;
+                    this.recognition.interimResults = true;
+                    this.recognition.lang = this.getLanguageCode(this.currentLanguage);
+                    this.recognition.maxAlternatives = 3; // Increased for better accuracy
+                    this.recognitionTimeout = null;
+                    this.silenceTimeout = null; // New timeout for silence detection
+                    this.lastSpeechTime = null; // Track last speech activity
+                    
+                    // Add service URI for better recognition
+                    if ('webkitSpeechRecognition' in window) {
+                        this.recognition.serviceURI = 'wss://www.google.com/speech-api/full-duplex/v1/up';
+                    }
+
+                    this.recognition.onstart = () => {
+                        console.log('Speech recognition started');
+                        this.updateStatus('Listening... Speak now!');
+                        this.startListeningAnimation();
+                        this.lastSpeechTime = Date.now();
+                        
+                        // Extended timeout for longer listening (30 seconds)
+                        this.recognitionTimeout = setTimeout(() => {
+                            if (this.isListening) {
+                                console.log('Speech recognition timeout after 30 seconds');
+                                this.recognition.stop();
+                            }
+                        }, 30000);
+                        
+                        // Start silence detection
+                        this.startSilenceDetection();
+                    };
+
+                    this.recognition.onresult = (event) => {
+                        console.log('Speech recognition result:', event.results);
+                        
+                        let finalTranscript = '';
+                        let interimTranscript = '';
+                        
+                        for (let i = event.resultIndex; i < event.results.length; i++) {
+                            const transcript = event.results[i][0].transcript;
+                            if (event.results[i].isFinal) {
+                                finalTranscript += transcript;
+                            } else {
+                                interimTranscript += transcript;
+                            }
+                        }
+                        
+                        // Update last speech time when we detect speech
+                        if (interimTranscript || finalTranscript) {
+                            this.lastSpeechTime = Date.now();
+                            this.resetSilenceTimeout();
+                        }
+                        
+                        if (interimTranscript) {
+                            this.updateStatus(`Listening: "${interimTranscript}"`);
+                        }
+                        
+                        if (finalTranscript) {
+                            console.log('Final speech recognized:', finalTranscript);
+                            // Wait a bit more to see if there's more speech coming
+                            setTimeout(() => {
+                                this.handleVoiceInput(finalTranscript.trim());
+                            }, 500); // 500ms delay to catch additional speech
+                        }
+                    };
+
+                    this.recognition.onerror = (event) => {
+                        console.error('Speech recognition error:', event.error, event);
+                        let errorMessage = 'Speech recognition error. Please try again.';
+                        
+                        if (this.recognitionTimeout) {
+                            clearTimeout(this.recognitionTimeout);
+                            this.recognitionTimeout = null;
+                        }
+                        
+                        switch(event.error) {
+                            case 'no-speech':
+                                errorMessage = 'No speech detected. Please speak louder and try again.';
+                                break;
+                            case 'audio-capture':
+                                errorMessage = 'Microphone not found. Please check your microphone connection.';
+                                break;
+                            case 'not-allowed':
+                                errorMessage = 'Microphone permission denied. Please allow microphone access and refresh the page.';
+                                break;
+                            case 'network':
+                                errorMessage = 'Network error. Please check your internet connection.';
+                                break;
+                            case 'aborted':
+                                console.log('Speech recognition aborted - this is normal');
+                                return; // Don't show error for aborted
+                            case 'service-not-allowed':
+                                errorMessage = 'Speech recognition service not allowed. Please check browser settings.';
+                                break;
+                            case 'bad-grammar':
+                                errorMessage = 'Speech recognition grammar error. Please try again.';
+                                break;
+                            default:
+                                errorMessage = `Speech recognition error: ${event.error}. Please try again.`;
+                        }
+                        
+                        this.updateStatus(errorMessage);
+                        this.stopListeningAnimation();
+                        this.isListening = false;
+                        
+                        // Auto-retry for certain errors
+                        if (['no-speech', 'network'].includes(event.error)) {
+                            setTimeout(() => {
+                                this.updateStatus('Click the microphone to try again');
+                            }, 2000);
+                        }
+                    };
+
+                    this.recognition.onend = () => {
+                        console.log('Speech recognition ended');
+                        
+                        // Clear all timeouts
+                        if (this.recognitionTimeout) {
+                            clearTimeout(this.recognitionTimeout);
+                            this.recognitionTimeout = null;
+                        }
+                        
+                        if (this.silenceTimeout) {
+                            clearTimeout(this.silenceTimeout);
+                            this.silenceTimeout = null;
+                        }
+                        
+                        this.stopListeningAnimation();
+                        this.isListening = false;
+                        this.updateStatus('Click the microphone to start talking');
+                    };
+                }
+            }
+
+            getLanguageCode(lang) {
+                const languageMap = {
+                    'en': 'en-US',
+                    'ta': 'ta-IN',
+                    'hi': 'hi-IN',
+                    'te': 'te-IN',
+                    'kn': 'kn-IN',
+                    'ml': 'ml-IN'
+                };
+                return languageMap[lang] || 'en-US';
+            }
+
+            setupSpeechSynthesis() {
+                this.synthesis = window.speechSynthesis;
+                this.voices = this.synthesis.getVoices();
+                
+                if (this.voices.length === 0) {
+                    this.synthesis.onvoiceschanged = () => {
+                        this.voices = this.synthesis.getVoices();
+                        console.log('Voices loaded:', this.voices.length);
+                    };
+                }
+            }
+
+            getVoiceForLanguage(lang) {
+                const preferredVoices = {
+                    'en': [
+                        // ChatGPT-style smooth female voices (most natural first)
+                        'Microsoft Hazel Desktop',        // Smooth, warm female voice
+                        'Microsoft Zira Desktop',         // Clear, natural female voice
+                        'Microsoft Susan Desktop',        // Soft, pleasant female voice
+                        'Microsoft Catherine Desktop',    // Professional female voice
+                        'Google UK English Female',       // Natural British female
+                        'Google US English Female',       // Natural American female
+                        'Samantha',                       // macOS smooth female voice
+                        'Victoria',                       // macOS clear female voice
+                        'Alex',                           // macOS natural voice
+                        'Microsoft Mark Desktop',         // Natural male fallback
+                        'Google UK English Male',         // British male fallback
+                        'Daniel',                         // macOS male fallback
+                        'Google US English Male',         // American male fallback
+                        'Microsoft David Desktop'         // Professional male fallback
+                    ],
+                    'ta': ['Google தமிழ் (India)', 'Microsoft Valluvar Desktop'],
+                    'hi': ['Google हिन्दी (India)', 'Microsoft Hemant Desktop'],
+                    'te': ['Google తెలుగు (India)', 'Microsoft Chitra Desktop'],
+                    'kn': ['Google ಕನ್ನಡ (India)', 'Microsoft Gagan Desktop'],
+                    'ml': ['Google മലയാളം (India)', 'Microsoft Ravi Desktop']
+                };
+                
+                const langCode = this.getLanguageCode(lang);
+                const preferred = preferredVoices[lang] || [];
+                
+                // First, try to find the best female voice (ChatGPT-style)
+                for (const preferredName of preferred) {
+                    const voice = this.voices.find(v => 
+                        v.name.includes(preferredName) || 
+                        v.name.toLowerCase().includes(preferredName.toLowerCase())
+                    );
+                    if (voice) {
+                        // Check if it's a female voice (ChatGPT-style preference)
+                        const isFemaleVoice = preferredName.toLowerCase().includes('female') || 
+                                            preferredName.toLowerCase().includes('hazel') ||
+                                            preferredName.toLowerCase().includes('zira') ||
+                                            preferredName.toLowerCase().includes('susan') ||
+                                            preferredName.toLowerCase().includes('catherine') ||
+                                            preferredName.toLowerCase().includes('samantha') ||
+                                            preferredName.toLowerCase().includes('victoria');
+                        
+                        if (isFemaleVoice) {
+                            console.log(`Using ChatGPT-style female voice: ${voice.name} (${voice.lang})`);
+                            return voice;
+                        }
+                    }
+                }
+                
+                // If no preferred female voice found, try any preferred voice
+                for (const preferredName of preferred) {
+                    const voice = this.voices.find(v => 
+                        v.name.includes(preferredName) || 
+                        v.name.toLowerCase().includes(preferredName.toLowerCase())
+                    );
+                    if (voice) {
+                        console.log(`Using preferred voice: ${voice.name} (${voice.lang})`);
+                        return voice;
+                    }
+                }
+                
+                const voice = this.voices.find(v => v.lang === langCode) || 
+                             this.voices.find(v => v.lang.startsWith(lang.split('-')[0])) ||
+                             this.voices.find(v => v.lang.includes('en')) ||
+                             this.voices[0];
+                
+                if (voice) {
+                    console.log(`Using fallback voice: ${voice.name} (${voice.lang})`);
+                }
+                
+                return voice;
+            }
+
+            setupEventListeners() {
+                // Voice button
+                document.getElementById('voiceButton').addEventListener('click', () => this.toggleListening());
+                
+                // Stop button
+                document.getElementById('stopButton').addEventListener('click', () => this.stopSpeaking());
+                
+                // Language selector
+                document.getElementById('languageSelect').addEventListener('change', (e) => this.setLanguage(e.target.value));
+                
+                // Settings button
+                document.getElementById('settingsBtn').addEventListener('click', () => this.toggleSettings());
+                
+                // Settings close
+                document.getElementById('settingsClose').addEventListener('click', () => this.toggleSettings());
+                
+                // Range sliders
+                document.getElementById('voiceSpeed').addEventListener('input', (e) => {
+                    this.settings.speed = parseFloat(e.target.value);
+                    this.updateRangeValues();
+                });
+                
+                document.getElementById('voicePitch').addEventListener('input', (e) => {
+                    this.settings.pitch = parseFloat(e.target.value);
+                    this.updateRangeValues();
+                });
+                
+                document.getElementById('voiceVolume').addEventListener('input', (e) => {
+                    this.settings.volume = parseFloat(e.target.value);
+                    this.updateRangeValues();
+                });
+            }
+
+            updateRangeValues() {
+                document.getElementById('speedValue').textContent = this.settings.speed.toFixed(1) + 'x';
+                document.getElementById('pitchValue').textContent = this.settings.pitch.toFixed(1);
+                document.getElementById('volumeValue').textContent = Math.round(this.settings.volume * 100) + '%';
+            }
+
+            toggleSettings() {
+                const panel = document.getElementById('voiceSettingsPanel');
+                panel.classList.toggle('show');
+            }
+
+            async toggleListening() {
+                console.log('Toggle listening called, current state:', this.isListening);
+                
+                if (!this.recognition) {
+                    alert('Speech recognition not supported in this browser. Please use Chrome or Edge.');
+                    return;
+                }
+
+                if (this.isListening) {
+                    console.log('Stopping listening...');
+                    this.stopListening();
+                } else {
+                    console.log('Starting listening...');
+                    await this.startListeningWithPermission();
+                }
+            }
+
+            async startListeningWithPermission() {
+                try {
+                    console.log('Requesting microphone permission...');
+                    this.updateStatus('Requesting microphone permission...');
+                    
+                    // Request microphone permission with better error handling
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            autoGainControl: true,
+                            sampleRate: 44100
+                        }
+                    });
+                    
+                    console.log('Microphone permission granted');
+                    this.updateStatus('Microphone ready. Starting speech recognition...');
+                    
+                    // Stop the stream immediately after getting permission
+                    stream.getTracks().forEach(track => {
+                        track.stop();
+                        console.log('Microphone stream stopped');
+                    });
+                    
+                    // Small delay to ensure permission is fully granted
+                    setTimeout(() => {
+                        this.startListening();
+                    }, 100);
+                    
+                } catch (error) {
+                    console.error('Microphone permission error:', error);
+                    
+                    let errorMessage = 'Microphone permission is required for voice input. ';
+                    if (error.name === 'NotAllowedError') {
+                        errorMessage += 'Please click "Allow" when prompted for microphone access, then refresh the page.';
+                        this.updateStatus('Microphone permission denied. Please allow access and refresh.');
+                    } else if (error.name === 'NotFoundError') {
+                        errorMessage += 'No microphone found. Please connect a microphone and try again.';
+                        this.updateStatus('No microphone found. Please connect a microphone.');
+                    } else if (error.name === 'NotReadableError') {
+                        errorMessage += 'Microphone is being used by another application. Please close other apps and try again.';
+                        this.updateStatus('Microphone busy. Please close other apps.');
+                    } else {
+                        errorMessage += 'Please check your microphone settings and try again.';
+                        this.updateStatus('Microphone error. Please check settings.');
+                    }
+                    
+                    alert(errorMessage);
+                    return;
+                }
+            }
+
+            startListening() {
+                if (this.isListening) {
+                    console.log('Already listening, ignoring start request');
+                    return;
+                }
+                
+                console.log('Starting speech recognition...');
+                this.isListening = true;
+                this.recognition.lang = this.getLanguageCode(this.currentLanguage);
+                
+                try {
+                    // Reset recognition state
+                    this.recognition.abort();
+                    
+                    // Small delay before starting
+                    setTimeout(() => {
+                        try {
+                            this.recognition.start();
+                            console.log('Speech recognition start() called successfully');
+                            
+                            const voiceButton = document.getElementById('voiceButton');
+                            voiceButton.classList.add('listening');
+                            
+                            // Set a longer timeout for better listening (30 seconds)
+                            this.recognitionTimeout = setTimeout(() => {
+                                if (this.isListening) {
+                                    console.log('Speech recognition timeout - stopping');
+                                    this.recognition.stop();
+                                }
+                            }, 30000); // Increased to 30 seconds
+                            
+                        } catch (startError) {
+                            console.error('Error in delayed start:', startError);
+                            this.isListening = false;
+                            this.updateStatus('Error starting speech recognition. Please try again.');
+                        }
+                    }, 200);
+                    
+                } catch (error) {
+                    console.error('Error starting speech recognition:', error);
+                    this.isListening = false;
+                    this.updateStatus('Error starting speech recognition. Please try again.');
+                }
+            }
+
+            stopListening() {
+                if (!this.isListening) return;
+                
+                console.log('Stopping speech recognition...');
+                this.isListening = false;
+                
+                // Clear all timeouts
+                if (this.recognitionTimeout) {
+                    clearTimeout(this.recognitionTimeout);
+                    this.recognitionTimeout = null;
+                }
+                
+                if (this.silenceTimeout) {
+                    clearTimeout(this.silenceTimeout);
+                    this.silenceTimeout = null;
+                }
+                
+                try {
+                    this.recognition.stop();
+                } catch (error) {
+                    console.log('Error stopping recognition (this is normal):', error);
+                }
+                
+                const voiceButton = document.getElementById('voiceButton');
+                voiceButton.classList.remove('listening');
+                
+                this.updateStatus('Click the microphone to start talking');
+            }
+
+            /**
+             * Start silence detection to wait for user to finish speaking
+             */
+            startSilenceDetection() {
+                this.silenceTimeout = setTimeout(() => {
+                    if (this.isListening && this.lastSpeechTime) {
+                        const silenceDuration = Date.now() - this.lastSpeechTime;
+                        console.log(`Silence detected for ${silenceDuration}ms`);
+                        
+                        // If silence for more than 3 seconds, stop listening
+                        if (silenceDuration > 3000) {
+                            console.log('Stopping due to silence timeout');
+                            this.recognition.stop();
+                        } else {
+                            // Continue checking
+                            this.startSilenceDetection();
+                        }
+                    }
+                }, 1000); // Check every second
+            }
+
+            /**
+             * Reset silence timeout when speech is detected
+             */
+            resetSilenceTimeout() {
+                if (this.silenceTimeout) {
+                    clearTimeout(this.silenceTimeout);
+                    this.silenceTimeout = null;
+                }
+                
+                // Restart silence detection
+                if (this.isListening) {
+                    this.startSilenceDetection();
+                }
+            }
+
+            startListeningAnimation() {
+                const voiceButton = document.getElementById('voiceButton');
+                voiceButton.classList.add('listening');
+            }
+
+            stopListeningAnimation() {
+                const voiceButton = document.getElementById('voiceButton');
+                voiceButton.classList.remove('listening');
+            }
+
+            setLanguage(lang) {
+                this.currentLanguage = lang;
+                console.log('Language changed to:', lang);
+                this.updateStatus(`Language changed to ${lang}`);
+            }
+
+            updateStatus(message) {
+                const statusElement = document.getElementById('statusDisplay');
+                if (statusElement) {
+                    statusElement.querySelector('span').textContent = message;
+                }
+            }
+
+            async handleVoiceInput(transcript) {
+                console.log('Processing voice input:', transcript);
+                this.updateStatus('Processing your message...');
+                
+                try {
+                    console.log('Sending request to /api/voice-chat with:', {
+                        message: transcript,
+                        session_id: this.sessionId,
+                        language: this.currentLanguage
+                    });
+                    
+                    const response = await fetch('/api/voice-chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: transcript,
+                            session_id: this.sessionId,
+                            language: this.currentLanguage
+                        })
+                    });
+
+                    console.log('Response status:', response.status);
+                    console.log('Response headers:', response.headers);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('Response data:', data);
+                    
+                    if (data.success) {
+                        this.updateStatus('Speaking response...');
+                        await this.speakResponse(data.response);
+                    } else {
+                        this.updateStatus('Error: ' + data.message);
+                        console.error('API returned error:', data.message);
+                    }
+                } catch (error) {
+                    console.error('Error processing voice input:', error);
+                    this.updateStatus('Error processing your message: ' + error.message);
+                }
+            }
+
+            async speakResponse(text) {
+                if (this.isSpeaking) {
+                    this.stopSpeaking();
+                }
+
+                this.isSpeaking = true;
+                this.updateStatus('Speaking...');
+                
+                const stopButton = document.getElementById('stopButton');
+                const voiceButton = document.getElementById('voiceButton');
+                stopButton.style.display = 'flex';
+                voiceButton.style.display = 'none';
+                
+                voiceButton.classList.add('speaking');
+
+                try {
+                    const cleanText = this.cleanTextForSpeech(text);
+                    console.log('Speaking cleaned text:', cleanText);
+                    
+                    if (['ta', 'hi', 'te', 'kn', 'ml'].includes(this.currentLanguage)) {
+                        await this.speakWithGTTS(cleanText);
+                    } else {
+                        await this.speakWithBrowser(cleanText);
+                    }
+                } catch (error) {
+                    console.error('Error speaking:', error);
+                    this.updateStatus('Error speaking response');
+                } finally {
+                    this.isSpeaking = false;
+                    stopButton.style.display = 'none';
+                    voiceButton.style.display = 'flex';
+                    voiceButton.classList.remove('speaking');
+                    this.updateStatus('Click the microphone to start talking');
+                }
+            }
+
+            cleanTextForSpeech(text) {
+                if (!text) return '';
+                
+                let cleanText = text
+                    // Remove markdown formatting
+                    .replace(/\*\*(.*?)\*\*/g, '$1')
+                    .replace(/\*(.*?)\*/g, '$1')
+                    .replace(/`(.*?)`/g, '$1')
+                    .replace(/```[\s\S]*?```/g, '')
+                    .replace(/`[\s\S]*?`/g, '')
+                    .replace(/#{1,6}\s+/g, '')
+                    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+                    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
+                    .replace(/^\s*[-*+]\s+/gm, '')
+                    .replace(/^\s*\d+\.\s+/gm, '')
+                    // Convert technical symbols to natural speech
+                    .replace(/&/g, ' and ')
+                    .replace(/@/g, ' at ')
+                    .replace(/#/g, ' hash ')
+                    .replace(/\$/g, ' dollar ')
+                    .replace(/%/g, ' percent ')
+                    .replace(/\*/g, ' ')
+                    .replace(/\+/g, ' plus ')
+                    .replace(/=/g, ' equals ')
+                    .replace(/</g, ' less than ')
+                    .replace(/>/g, ' greater than ')
+                    .replace(/\|/g, ' or ')
+                    .replace(/\\/g, ' ')
+                    .replace(/\//g, ' ')
+                    .replace(/\[/g, ' ')
+                    .replace(/\]/g, ' ')
+                    .replace(/\{/g, ' ')
+                    .replace(/\}/g, ' ')
+                    .replace(/\(/g, ' ')
+                    .replace(/\)/g, ' ')
+                    .replace(/~/g, ' ')
+                    .replace(/`/g, ' ')
+                    .replace(/"/g, ' ')
+                    .replace(/'/g, ' ')
+                    .replace(/;/g, ' ')
+                    .replace(/:/g, ' ')
+                    .replace(/,/g, ' ')
+                    .replace(/\./g, ' ')
+                    .replace(/\?/g, ' ')
+                    .replace(/!/g, ' ')
+                    .replace(/-/g, ' ')
+                    .replace(/_/g, ' ')
+                    // Clean up spacing and formatting
+                    .replace(/\n{3,}/g, '\n\n')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+                
+                // Limit text length for better speech
+                if (cleanText.length > 500) {
+                    cleanText = cleanText.substring(0, 500) + '...';
+                }
+                
+                return cleanText;
+            }
+
+            async speakWithGTTS(text) {
+                try {
+                    const response = await fetch('/api/gtts-speak', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            text: text,
+                            language: this.currentLanguage
+                        })
+                    });
+
+                    if (response.ok) {
+                        const audioBlob = await response.blob();
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const audio = new Audio(audioUrl);
+                        
+                        audio.volume = this.settings.volume;
+                        
+                        audio.onended = () => {
+                            URL.revokeObjectURL(audioUrl);
+                        };
+                        
+                        await audio.play();
+                    } else {
+                        throw new Error('GTTS request failed');
+                    }
+                } catch (error) {
+                    console.error('GTTS error:', error);
+                    await this.speakWithBrowser(text);
+                }
+            }
+
+            async speakWithBrowser(text) {
+                return new Promise((resolve, reject) => {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    
+                    utterance.lang = this.getLanguageCode(this.currentLanguage);
+                    
+                    const voice = this.getVoiceForLanguage(this.currentLanguage);
+                    if (voice) {
+                        utterance.voice = voice;
+                        console.log('Using voice:', voice.name, voice.lang);
+                    } else {
+                        console.log('Using default voice for language:', utterance.lang);
+                    }
+                    
+                    // Enhanced settings for natural speech
+                    utterance.rate = this.settings.speed;
+                    utterance.pitch = this.settings.pitch;
+                    utterance.volume = this.settings.volume;
+                    
+                    // Add natural pauses and improve text flow
+                    utterance.text = this.addNaturalSpeechPauses(text);
+                    
+                    utterance.onstart = () => {
+                        console.log('Speech synthesis started with natural voice');
+                    };
+                    
+                    utterance.onend = () => {
+                        console.log('Speech synthesis ended');
+                        resolve();
+                    };
+                    
+                    utterance.onerror = (error) => {
+                        console.error('Speech synthesis error:', error);
+                        reject(error);
+                    };
+                    
+                    this.synthesis.cancel();
+                    this.synthesis.speak(utterance);
+                });
+            }
+
+            addNaturalSpeechPauses(text) {
+                // ChatGPT-style smooth speech processing
+                let naturalText = text
+                    // Add smooth pauses after sentences (like ChatGPT)
+                    .replace(/\./g, '. ')
+                    .replace(/\?/g, '? ')
+                    .replace(/!/g, '! ')
+                    // Add gentle pauses for commas and colons
+                    .replace(/,/g, ', ')
+                    .replace(/:/g, ': ')
+                    .replace(/;/g, '; ')
+                    // Add smooth pauses for conjunctions (like ChatGPT's natural flow)
+                    .replace(/\b(and|but|or|so|yet|for|nor)\b/g, ' $1 ')
+                    // Add pauses for transitions (ChatGPT-style)
+                    .replace(/\b(however|therefore|moreover|furthermore|meanwhile|consequently|additionally|furthermore)\b/g, ' $1 ')
+                    // Add smooth pauses for lists (ChatGPT-style)
+                    .replace(/\b(first|second|third|finally|lastly|next|then|also|plus|moreover)\b/g, ' $1 ')
+                    // Add pauses for conversational words (like ChatGPT)
+                    .replace(/\b(well|actually|basically|essentially|obviously|clearly|indeed|certainly)\b/g, ' $1 ')
+                    // Clean up multiple spaces
+                    .replace(/\s+/g, ' ')
+                    .trim();
+                
+                // Add smooth breathing pauses for longer sentences (ChatGPT-style)
+                const sentences = naturalText.split(/[.!?]+/);
+                if (sentences.length > 1) {
+                    naturalText = sentences
+                        .map(sentence => sentence.trim())
+                        .filter(sentence => sentence.length > 0)
+                        .join('. ')
+                        + (naturalText.endsWith('.') || naturalText.endsWith('!') || naturalText.endsWith('?') ? '' : '.');
+                }
+                
+                return naturalText;
+            }
+
+            addSpeechPauses(text) {
+                // Keep the old function for backward compatibility
+                return this.addNaturalSpeechPauses(text);
+            }
+
+            stopSpeaking() {
+                if (this.synthesis) {
+                    this.synthesis.cancel();
+                }
+                this.isSpeaking = false;
+                
+                const stopButton = document.getElementById('stopButton');
+                const voiceButton = document.getElementById('voiceButton');
+                stopButton.style.display = 'none';
+                voiceButton.style.display = 'flex';
+                voiceButton.classList.remove('speaking');
+                
+                this.updateStatus('Click the microphone to start talking');
+            }
+
+            /**
+             * Universal speak function for any assistant message
+             * Uses browser's speechSynthesis API with optimized female voice
+             * @param {string} text - The text to speak
+             * @param {Object} options - Optional settings (voice, rate, pitch, volume)
+             * @returns {Promise} - Resolves when speech is complete
+             */
+            async speak(text, options = {}) {
+                if (!text || typeof text !== 'string') {
+                    console.warn('Speak function called with invalid text:', text);
+                    return Promise.resolve();
+                }
+
+                // Default options for natural female voice
+                const defaultOptions = {
+                    voice: 'Google UK English Female', // Preferred female voice
+                    rate: 0.95,    // Slightly slower for natural speech
+                    pitch: 1.05,   // Slightly higher for pleasant female voice
+                    volume: 0.9,   // Clear and audible
+                    lang: 'en-GB'  // British English for better pronunciation
+                };
+
+                // Merge with provided options
+                const settings = { ...defaultOptions, ...options };
+
+                return new Promise((resolve, reject) => {
+                    try {
+                        // Wait for voices to load if not already loaded
+                        this.waitForVoices().then(() => {
+                            const utterance = new SpeechSynthesisUtterance(text);
+                            
+                            // Set language
+                            utterance.lang = settings.lang;
+                            
+                            // Find the best female voice
+                            const selectedVoice = this.getBestFemaleVoice(settings.voice);
+                            if (selectedVoice) {
+                                utterance.voice = selectedVoice;
+                                console.log(`Speaking with voice: ${selectedVoice.name} (${selectedVoice.lang})`);
+                            } else {
+                                console.log('Using default voice for language:', utterance.lang);
+                            }
+                            
+                            // Apply natural voice settings
+                            utterance.rate = settings.rate;
+                            utterance.pitch = settings.pitch;
+                            utterance.volume = settings.volume;
+                            
+                            // Process text for natural speech
+                            utterance.text = this.processTextForNaturalSpeech(text);
+                            
+                            // Event handlers
+                            utterance.onstart = () => {
+                                console.log('Speech started:', text.substring(0, 50) + '...');
+                                this.isSpeaking = true;
+                            };
+                            
+                            utterance.onend = () => {
+                                console.log('Speech completed');
+                                this.isSpeaking = false;
+                                resolve();
+                            };
+                            
+                            utterance.onerror = (error) => {
+                                console.error('Speech synthesis error:', error);
+                                this.isSpeaking = false;
+                                reject(error);
+                            };
+                            
+                            // Cancel any ongoing speech and start new one
+                            this.synthesis.cancel();
+                            this.synthesis.speak(utterance);
+                            
+                        }).catch(error => {
+                            console.error('Error waiting for voices:', error);
+                            reject(error);
+                        });
+                        
+                    } catch (error) {
+                        console.error('Error in speak function:', error);
+                        reject(error);
+                    }
+                });
+            }
+
+            /**
+             * Wait for voices to load properly
+             * @returns {Promise} - Resolves when voices are available
+             */
+            waitForVoices() {
+                return new Promise((resolve) => {
+                    if (this.voices && this.voices.length > 0) {
+                        resolve();
+                        return;
+                    }
+
+                    // If voices are not loaded, wait for them
+                    const checkVoices = () => {
+                        this.voices = this.synthesis.getVoices();
+                        if (this.voices && this.voices.length > 0) {
+                            console.log(`Voices loaded: ${this.voices.length} voices available`);
+                            resolve();
+                        } else {
+                            // Retry after a short delay
+                            setTimeout(checkVoices, 100);
+                        }
+                    };
+
+                    // Listen for voices changed event
+                    this.synthesis.onvoiceschanged = () => {
+                        this.voices = this.synthesis.getVoices();
+                        if (this.voices && this.voices.length > 0) {
+                            console.log(`Voices loaded via event: ${this.voices.length} voices available`);
+                            resolve();
+                        }
+                    };
+
+                    // Start checking
+                    checkVoices();
+                });
+            }
+
+            /**
+             * Get the best available female voice
+             * @param {string} preferredVoice - Preferred voice name
+             * @returns {SpeechSynthesisVoice|null} - Best female voice or null
+             */
+            getBestFemaleVoice(preferredVoice = 'Google UK English Female') {
+                if (!this.voices || this.voices.length === 0) {
+                    return null;
+                }
+
+                // List of preferred female voices in order of preference
+                const femaleVoices = [
+                    'Google UK English Female',
+                    'Google US English Female', 
+                    'Microsoft Hazel Desktop',
+                    'Microsoft Zira Desktop',
+                    'Microsoft Susan Desktop',
+                    'Microsoft Catherine Desktop',
+                    'Samantha',
+                    'Victoria',
+                    'Alex',
+                    'Karen',
+                    'Moira',
+                    'Tessa'
+                ];
+
+                // First, try to find the exact preferred voice
+                let voice = this.voices.find(v => 
+                    v.name === preferredVoice || 
+                    v.name.includes(preferredVoice)
+                );
+
+                if (voice) {
+                    return voice;
+                }
+
+                // Then try other female voices
+                for (const voiceName of femaleVoices) {
+                    voice = this.voices.find(v => 
+                        v.name.includes(voiceName) || 
+                        v.name.toLowerCase().includes(voiceName.toLowerCase())
+                    );
+                    if (voice) {
+                        return voice;
+                    }
+                }
+
+                // Fallback: find any English female voice
+                voice = this.voices.find(v => 
+                    v.lang.startsWith('en') && 
+                    (v.name.toLowerCase().includes('female') || 
+                     v.name.toLowerCase().includes('woman') ||
+                     v.name.toLowerCase().includes('lady'))
+                );
+
+                if (voice) {
+                    return voice;
+                }
+
+                // Last resort: any English voice
+                voice = this.voices.find(v => v.lang.startsWith('en'));
+                
+                return voice || this.voices[0] || null;
+            }
+
+            /**
+             * Process text for natural speech delivery
+             * @param {string} text - Input text
+             * @returns {string} - Processed text for natural speech
+             */
+            processTextForNaturalSpeech(text) {
+                if (!text) return '';
+
+                return text
+                    // Remove markdown formatting
+                    .replace(/\*\*(.*?)\*\*/g, '$1')
+                    .replace(/\*(.*?)\*/g, '$1')
+                    .replace(/`(.*?)`/g, '$1')
+                    .replace(/```[\s\S]*?```/g, '')
+                    .replace(/#{1,6}\s+/g, '')
+                    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+                    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
+                    // Convert symbols to words for better pronunciation
+                    .replace(/&/g, ' and ')
+                    .replace(/@/g, ' at ')
+                    .replace(/#/g, ' hash ')
+                    .replace(/\$/g, ' dollar ')
+                    .replace(/%/g, ' percent ')
+                    .replace(/\+/g, ' plus ')
+                    .replace(/=/g, ' equals ')
+                    .replace(/</g, ' less than ')
+                    .replace(/>/g, ' greater than ')
+                    .replace(/\|/g, ' or ')
+                    // Add natural pauses
+                    .replace(/\./g, '. ')
+                    .replace(/\?/g, '? ')
+                    .replace(/!/g, '! ')
+                    .replace(/,/g, ', ')
+                    .replace(/:/g, ': ')
+                    .replace(/;/g, '; ')
+                    // Clean up spacing
+                    .replace(/\s+/g, ' ')
+                    .trim();
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Standalone Voice Assistant page loaded!');
+            window.voiceAssistant = new StandaloneVoiceAssistant();
+        });
+
+        /**
+         * Global speak function - can be called from anywhere in the project
+         * @param {string} text - The text to speak
+         * @param {Object} options - Optional settings (voice, rate, pitch, volume)
+         * @returns {Promise} - Resolves when speech is complete
+         */
+        window.speak = async function(text, options = {}) {
+            // If voice assistant is available, use it
+            if (window.voiceAssistant && typeof window.voiceAssistant.speak === 'function') {
+                return await window.voiceAssistant.speak(text, options);
+            }
+            
+            // Fallback: create a simple speech synthesis
+            return new Promise((resolve, reject) => {
+                try {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    
+                    // Default settings for natural female voice
+                    utterance.rate = options.rate || 0.95;
+                    utterance.pitch = options.pitch || 1.05;
+                    utterance.volume = options.volume || 0.9;
+                    utterance.lang = options.lang || 'en-GB';
+                    
+                    // Try to find a female voice
+                    const voices = speechSynthesis.getVoices();
+                    const femaleVoice = voices.find(v => 
+                        v.name.includes('Female') || 
+                        v.name.includes('Hazel') ||
+                        v.name.includes('Zira') ||
+                        v.name.includes('Samantha') ||
+                        v.name.includes('Victoria')
+                    );
+                    
+                    if (femaleVoice) {
+                        utterance.voice = femaleVoice;
+                        console.log(`Speaking with voice: ${femaleVoice.name}`);
+                    }
+                    
+                    utterance.onend = () => resolve();
+                    utterance.onerror = (error) => reject(error);
+                    
+                    speechSynthesis.speak(utterance);
+                    
+                } catch (error) {
+                    console.error('Error in global speak function:', error);
+                    reject(error);
+                }
+            });
+        };
+    </script>
+</body>
+</html>

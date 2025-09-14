@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumora AI - Lightning Fast Intelligence</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" id="newChatBtn">
+                    <i class="fas fa-plus"></i>
+                    <span>New Chat</span>
+                </button>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="chat-history" id="chatHistory">
+                <!-- Chat sessions will be loaded here -->
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="username" id="username">User</span>
+                        <button class="logout-btn" id="logoutBtn" title="Logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main-content">
+            <div class="chat-container">
+                <div class="chat-header" id="chatHeader">
+                    <div class="chat-title">
+                        <h1 id="chatTitle">Lumora AI</h1>
+                        <div class="status-indicator">
+                            <div class="status-dot"></div>
+                            <span>Lightning Fast</span>
+                        </div>
+                    </div>
+                <div class="chat-actions">
+                    <button class="action-btn" id="clearChatBtn" title="Clear Chat">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="action-btn" id="stopBtn" title="Stop Generating" style="display: none;">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                </div>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <div class="welcome-screen" id="welcomeScreen">
+                        <div class="welcome-content">
+                            <div class="welcome-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h2>Welcome to Lumora AI</h2>
+                            <p>I'm Lumora, your lightning-fast AI assistant! I can help you with text, images, documents, and more with blazing speed!</p>
+                            <div class="feature-grid">
+                                <div class="feature-card">
+                                    <i class="fas fa-bolt"></i>
+                                    <span>Lightning Fast</span>
+                                </div>
+                                <div class="feature-card">
+                                    <i class="fas fa-image"></i>
+                                    <span>Image Analysis</span>
+                                </div>
+                                <div class="feature-card">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span>Document Q&A</span>
+                                </div>
+                                <div class="feature-card">
+                                    <i class="fas fa-microphone"></i>
+                                    <span>Voice Input</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Input Bar -->
+                <div class="input-container" id="inputContainer">
+                    <div class="input-wrapper">
+                        <div class="input-actions">
+                            <button class="action-btn" id="imageUploadBtn" title="Upload Image">
+                                <i class="fas fa-image"></i>
+                                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                            </button>
+                            <button class="action-btn" id="documentUploadBtn" title="Upload Document">
+                                <i class="fas fa-file-alt"></i>
+                                <input type="file" id="documentInput" accept=".pdf,.docx,.txt,.ppt,.pptx" style="display: none;">
+                            </button>
+                        </div>
+                        
+                        <div class="input-field">
+                            <textarea 
+                                id="messageInput" 
+                                placeholder="Message Lumora AI..." 
+                                rows="1"
+                                autocomplete="off"
+                            ></textarea>
+                            <button class="send-btn" id="sendBtn" disabled>
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="upload-preview" id="uploadPreview" style="display: none;">
+                        <div class="preview-content">
+                            <span id="previewText"></span>
+                            <button class="remove-btn" id="removePreview">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Message Context Menu -->
+    <div class="context-menu" id="contextMenu" style="display: none;">
+        <button class="context-item" id="copyBtn">
+            <i class="fas fa-copy"></i>
+            Copy
+        </button>
+        <button class="context-item" id="regenerateBtn">
+            <i class="fas fa-redo"></i>
+            Regenerate
+        </button>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Processing...</p>
+        </div>
+    </div>
+
+
+    <script>
+        // Global variables
+        let currentSessionId = null;
+        let isGenerating = false;
+        let currentEventSource = null;
+        let uploadedImage = null;
+        let uploadedDocument = null;
+        let chatMemory = [];
+
+        // DOM elements
+        const sidebar = document.getElementById('sidebar');
+        const chatHistory = document.getElementById('chatHistory');
+        const chatMessages = document.getElementById('chatMessages');
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const newChatBtn = document.getElementById('newChatBtn');
+        const imageInput = document.getElementById('imageInput');
+        const documentInput = document.getElementById('documentInput');
+        const imageUploadBtn = document.getElementById('imageUploadBtn');
+        const documentUploadBtn = document.getElementById('documentUploadBtn');
+        const uploadPreview = document.getElementById('uploadPreview');
+        const previewText = document.getElementById('previewText');
+        const removePreview = document.getElementById('removePreview');
+        const contextMenu = document.getElementById('contextMenu');
+        const copyBtn = document.getElementById('copyBtn');
+        const regenerateBtn = document.getElementById('regenerateBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const clearChatBtn = document.getElementById('clearChatBtn');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded');
+            
+            loadChatSessions();
+            setupEventListeners();
+            autoResizeTextarea();
+            updateUsername();
+            ensureProperSpacing();
+        });
+
+        // Event listeners
+        function setupEventListeners() {
+            console.log('Setting up event listeners...');
+            
+            // Check if elements exist
+            if (!sendBtn) console.error('Send button not found');
+            if (!messageInput) console.error('Message input not found');
+            if (!imageUploadBtn) console.error('Image upload button not found');
+            if (!documentUploadBtn) console.error('Document upload button not found');
+            
+            // Send message
+            if (sendBtn) {
+                sendBtn.addEventListener('click', sendMessage);
+                console.log('Send button listener added');
+            }
+            if (messageInput) {
+                messageInput.addEventListener('keydown', handleKeyDown);
+                messageInput.addEventListener('input', handleInputChange);
+                console.log('Message input listeners added');
+            }
+
+            // New chat
+            if (newChatBtn) {
+                newChatBtn.addEventListener('click', createNewChat);
+                console.log('New chat button listener added');
+            }
+
+            // File uploads
+            if (imageUploadBtn && imageInput) {
+                imageUploadBtn.addEventListener('click', () => {
+                    console.log('Image upload button clicked');
+                    imageInput.click();
+                });
+                console.log('Image upload button listener added');
+            }
+            if (documentUploadBtn && documentInput) {
+                documentUploadBtn.addEventListener('click', () => {
+                    console.log('Document upload button clicked');
+                    documentInput.click();
+                });
+                console.log('Document upload button listener added');
+            }
+            if (imageInput) {
+                imageInput.addEventListener('change', handleImageUpload);
+                console.log('Image input change listener added');
+            }
+            if (documentInput) {
+                documentInput.addEventListener('change', handleDocumentUpload);
+                console.log('Document input change listener added');
+            }
+
+
+            // Remove preview
+            removePreview.addEventListener('click', clearUploads);
+
+            // Context menu
+            copyBtn.addEventListener('click', copyMessage);
+            regenerateBtn.addEventListener('click', regenerateMessage);
+
+            // Stop generation
+            stopBtn.addEventListener('click', stopGeneration);
+
+            // Clear chat
+            clearChatBtn.addEventListener('click', clearCurrentChat);
+
+            // Sidebar toggle
+            sidebarToggle.addEventListener('click', toggleSidebar);
+
+            // Logout
+            logoutBtn.addEventListener('click', logout);
+
+            // Close context menu on click outside
+            document.addEventListener('click', (e) => {
+                if (!contextMenu.contains(e.target)) {
+                    contextMenu.style.display = 'none';
+                }
+            });
+
+            // Auto-resize textarea
+            messageInput.addEventListener('input', autoResizeTextarea);
+        }
+
+        // Auto-resize textarea
+        function autoResizeTextarea() {
+            messageInput.style.height = 'auto';
+            messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
+        }
+
+        // Handle input change
+        function handleInputChange() {
+            const hasContent = messageInput.value.trim().length > 0 || uploadedImage || uploadedDocument;
+            sendBtn.disabled = !hasContent || isGenerating;
+        }
+
+        // Handle key down
+        function handleKeyDown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Load chat sessions
+        async function loadChatSessions() {
+            try {
+                const response = await fetch('/api/sessions');
+                const data = await response.json();
+                
+                chatHistory.innerHTML = '';
+                
+                if (data.sessions && data.sessions.length > 0) {
+                    data.sessions.forEach(sessionId => {
+                        loadSession(sessionId);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading sessions:', error);
+            }
+        }
+
+        // Load individual session
+        async function loadSession(sessionId) {
+            try {
+                const response = await fetch(`/api/sessions/${sessionId}/messages`);
+                const data = await response.json();
+                
+                if (data.messages && data.messages.length > 0) {
+                    const sessionDiv = document.createElement('div');
+                    sessionDiv.className = 'chat-session';
+                    sessionDiv.dataset.sessionId = sessionId;
+                    
+                    const title = data.messages[0].content.substring(0, 30) + '...';
+                    sessionDiv.innerHTML = `
+                        <div class="session-content">
+                            <span class="session-title">${title}</span>
+                            <div class="session-actions">
+                                <button class="session-action" onclick="editSessionTitle('${sessionId}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="session-action" onclick="deleteSession('${sessionId}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    sessionDiv.addEventListener('click', (e) => {
+                        if (!e.target.closest('.session-action')) {
+                            switchToSession(sessionId);
+                        }
+                    });
+                    
+                    chatHistory.appendChild(sessionDiv);
+                }
+            } catch (error) {
+                console.error('Error loading session:', error);
+            }
+        }
+
+        // Create new chat
+        async function createNewChat() {
+            try {
+                const response = await fetch('/api/sessions', { method: 'POST' });
+                const data = await response.json();
+                
+                currentSessionId = data.session_id;
+                clearChatMessages();
+                hideWelcomeScreen();
+                loadChatSessions();
+            } catch (error) {
+                console.error('Error creating new chat:', error);
+            }
+        }
+
+        // Switch to session
+        async function switchToSession(sessionId) {
+            currentSessionId = sessionId;
+            clearChatMessages();
+            hideWelcomeScreen();
+            
+            try {
+                const response = await fetch(`/api/sessions/${sessionId}/messages`);
+                const data = await response.json();
+                
+                if (data.messages) {
+                    data.messages.forEach(message => {
+                        addMessageToChat(message);
+                    });
+                }
+            } catch (error) {
+                console.error('Error switching to session:', error);
+            }
+        }
+
+        // Send message
+        async function sendMessage() {
+            console.log('Send message function called');
+            const message = messageInput.value.trim();
+            console.log('Message:', message);
+            console.log('Uploaded image:', !!uploadedImage);
+            console.log('Uploaded document:', !!uploadedDocument);
+            
+            if (!message && !uploadedImage && !uploadedDocument) {
+                console.log('No content to send');
+                return;
+            }
+            
+            // Create session if none exists
+            if (!currentSessionId) {
+                await createNewChat();
+            }
+            
+            // Add user message
+            const userMessage = {
+                id: generateId(),
+                role: 'user',
+                content: message,
+                timestamp: new Date().toISOString(),
+                image: uploadedImage,
+                document_content: uploadedDocument
+            };
+            
+            addMessageToChat(userMessage);
+            clearInput();
+            
+            // Send to backend
+            await sendToBackend(userMessage);
+        }
+
+        // Send to backend
+        async function sendToBackend(userMessage) {
+            isGenerating = true;
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            stopBtn.style.display = 'inline-flex';
+            
+            // Add typing indicator
+            const typingId = addTypingIndicator();
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: userMessage.content,
+                        session_id: currentSessionId,
+                        image: userMessage.image,
+                        document_content: userMessage.document_content
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                // Handle streaming response
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let assistantMessage = null;
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.substring(6));
+                                
+                                if (data.type === 'start') {
+                                    removeTypingIndicator(typingId);
+                                    assistantMessage = createAssistantMessage();
+                                } else if (data.type === 'token') {
+                                    if (assistantMessage) {
+                                        appendToMessage(assistantMessage, data.content);
+                                    }
+                                } else if (data.type === 'end') {
+                                    finalizeMessage(assistantMessage);
+                                    isGenerating = false;
+                                    sendBtn.disabled = false;
+                                    sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                                    stopBtn.style.display = 'none';
+                                } else if (data.type === 'error') {
+                                    throw new Error(data.error);
+                                }
+                            } catch (e) {
+                                console.error('Error parsing SSE data:', e);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                removeTypingIndicator(typingId);
+                showError('Failed to send message. Please try again.');
+                isGenerating = false;
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                stopBtn.style.display = 'none';
+            }
+        }
+
+        // File upload handlers
+        async function handleImageUpload(e) {
+            console.log('Image upload function called');
+            const file = e.target.files[0];
+            console.log('Selected file:', file);
+            if (!file) {
+                console.log('No file selected');
+                return;
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    uploadedImage = data.data;
+                    showUploadPreview(`Image: ${data.filename}`);
+                }
+            } catch (error) {
+                console.error('Error uploading image:', error);
+            }
+        }
+
+        async function handleDocumentUpload(e) {
+            console.log('Document upload function called');
+            const file = e.target.files[0];
+            console.log('Selected file:', file);
+            if (!file) {
+                console.log('No file selected');
+                return;
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    uploadedDocument = data.content;
+                    showUploadPreview(`Document: ${data.filename}`);
+                }
+            } catch (error) {
+                console.error('Error uploading document:', error);
+            }
+        }
+
+        // Voice input
+        function toggleVoiceInput() {
+            // Placeholder for voice input functionality
+            alert('Voice input feature coming soon!');
+        }
+
+        // UI helper functions
+        function addMessageToChat(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${message.role}-message`;
+            messageDiv.dataset.messageId = message.id;
+            
+            let content = '';
+            if (message.image) {
+                content += `<div class="message-image"><img src="${message.image}" alt="Uploaded image"></div>`;
+            }
+            if (message.document_content) {
+                content += `<div class="message-document"><i class="fas fa-file-alt"></i> Document attached</div>`;
+            }
+            content += `<div class="message-text">${formatMessage(message.content)}</div>`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    ${content}
+                    <div class="message-actions">
+                        <button class="message-action" onclick="showContextMenu(event, '${message.id}')">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            adjustSpacing(); // Ensure proper spacing
+            scrollToBottom();
+        }
+
+        function createAssistantMessage() {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message assistant-message';
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="message-text"></div>
+                    <div class="message-actions">
+                        <button class="message-action" onclick="showContextMenu(event, '${generateId()}')">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            adjustSpacing(); // Ensure proper spacing
+            scrollToBottom();
+            return messageDiv;
+        }
+
+        function appendToMessage(messageDiv, content) {
+            const textDiv = messageDiv.querySelector('.message-text');
+            textDiv.innerHTML += content;
+            // Reduced scroll frequency for faster performance
+            if (Math.random() < 0.3) { // Only scroll 30% of the time for speed
+                scrollToBottom();
+            }
+        }
+
+        function finalizeMessage(messageDiv) {
+            // Add timestamp and other final touches
+            const messageContent = messageDiv.querySelector('.message-content');
+            const timestamp = document.createElement('div');
+            timestamp.className = 'message-timestamp';
+            timestamp.textContent = new Date().toLocaleTimeString();
+            messageContent.appendChild(timestamp);
+        }
+
+        function addTypingIndicator() {
+            const typingId = generateId();
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message assistant-message typing-indicator';
+            typingDiv.id = typingId;
+            typingDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(typingDiv);
+            scrollToBottom();
+            return typingId;
+        }
+
+        function removeTypingIndicator(typingId) {
+            const typingDiv = document.getElementById(typingId);
+            if (typingDiv) {
+                typingDiv.remove();
+            }
+        }
+
+        function showUploadPreview(text) {
+            previewText.textContent = text;
+            uploadPreview.style.display = 'block';
+        }
+
+        function clearUploads() {
+            uploadedImage = null;
+            uploadedDocument = null;
+            uploadPreview.style.display = 'none';
+            imageInput.value = '';
+            documentInput.value = '';
+            handleInputChange();
+        }
+
+        function clearInput() {
+            messageInput.value = '';
+            clearUploads();
+            autoResizeTextarea();
+        }
+
+        function clearChatMessages() {
+            chatMessages.innerHTML = '';
+        }
+
+        function hideWelcomeScreen() {
+            welcomeScreen.style.display = 'none';
+        }
+
+        function scrollToBottom() {
+            // Add a small delay to ensure DOM updates are complete
+            setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 100);
+        }
+
+        function showContextMenu(event, messageId) {
+            event.stopPropagation();
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = event.pageX + 'px';
+            contextMenu.style.top = event.pageY + 'px';
+            contextMenu.dataset.messageId = messageId;
+        }
+
+        function copyMessage() {
+            const messageId = contextMenu.dataset.messageId;
+            const messageDiv = document.querySelector(`[data-message-id="${messageId}"]`);
+            const text = messageDiv.querySelector('.message-text').textContent;
+            navigator.clipboard.writeText(text);
+            contextMenu.style.display = 'none';
+        }
+
+        function regenerateMessage() {
+            // Placeholder for regenerate functionality
+            contextMenu.style.display = 'none';
+        }
+
+        function stopGeneration() {
+            isGenerating = false;
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+            stopBtn.style.display = 'none';
+        }
+
+        // Voice Chat Functions
+        function toggleVoiceChat() {
+            console.log('Voice chat button clicked');
+            
+            // Check if GPTVoiceAssistant class is available
+            if (typeof GPTVoiceAssistant === 'undefined') {
+                console.error('GPTVoiceAssistant class not found');
+                alert('Voice assistant not loaded. Please refresh the page.');
+                return;
+            }
+            
+            // Initialize GPT voice assistant if not already created
+            if (!window.gptVoiceAssistant) {
+                console.log('Creating new GPT voice assistant');
+                try {
+                    window.gptVoiceAssistant = new GPTVoiceAssistant();
+                    console.log('GPT voice assistant created successfully');
+                } catch (error) {
+                    console.error('Error creating GPT voice assistant:', error);
+                    alert('Error creating voice assistant: ' + error.message);
+                    return;
+                }
+            }
+            
+            // Toggle the voice chat interface
+            const overlay = document.getElementById('gptVoiceOverlay');
+            if (overlay && overlay.classList.contains('show')) {
+                console.log('Closing voice chat');
+                window.gptVoiceAssistant.close();
+            } else {
+                console.log('Opening voice chat');
+                window.gptVoiceAssistant.open();
+            }
+        }
+
+        function clearCurrentChat() {
+            if (confirm('Are you sure you want to clear this chat?')) {
+                clearChatMessages();
+                welcomeScreen.style.display = 'block';
+            }
+        }
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('collapsed');
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/logout';
+            }
+        }
+
+        function editSessionTitle(sessionId) {
+            const newTitle = prompt('Enter new title:');
+            if (newTitle) {
+                fetch(`/api/sessions/${sessionId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: newTitle })
+                }).then(() => loadChatSessions());
+            }
+        }
+
+        function deleteSession(sessionId) {
+            if (confirm('Are you sure you want to delete this chat?')) {
+                fetch(`/api/sessions/${sessionId}`, { method: 'DELETE' })
+                    .then(() => {
+                        if (currentSessionId === sessionId) {
+                            currentSessionId = null;
+                            clearChatMessages();
+                            welcomeScreen.style.display = 'block';
+                        }
+                        loadChatSessions();
+                    });
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            chatMessages.appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        function updateUsername() {
+            // This would be set from the server session
+            document.getElementById('username').textContent = 'User';
+        }
+
+        function formatMessage(content) {
+            // Enhanced markdown formatting for structured ChatGPT-like output
+            let formatted = content
+                // Aggressive cleanup of escape characters
+                .replace(/\\n/g, '')
+                .replace(/\\t/g, '')
+                .replace(/\\r/g, '')
+                .replace(/\\[ntr]/g, '')
+                // Remove excessive line breaks
+                .replace(/\n{3,}/g, '\n\n')
+                // Bold text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                // Italic text
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                // Inline code
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                // Headers (I., II., III., etc.) - handle both bold and non-bold
+                .replace(/^(I+\.|IV\.|V\.|VI\.|VII\.|VIII\.|IX\.|X\.|XI\.|XII\.|XIII\.|XIV\.|XV\.|XVI\.|XVII\.|XVIII\.|XIX\.|XX\.)\s+(.*)$/gm, '<h3><strong>$1 $2</strong></h3>')
+                // Numbered lists (1., 2., 3., etc.)
+                .replace(/^(\d+\.)\s+(.*)$/gm, '<div class="numbered-item"><span class="number">$1</span><span class="content">$2</span></div>')
+                // Bullet points with • symbol
+                .replace(/^•\s+(.*)$/gm, '<div class="bullet-item">• $1</div>')
+                // Also handle * bullet points and convert to •
+                .replace(/^\*\s+(.*)$/gm, '<div class="bullet-item">• $1</div>')
+                // Handle double line breaks for paragraphs
+                .replace(/\n\n/g, '</p><p>')
+                // Handle single line breaks
+                .replace(/\n/g, '<br>');
+            
+            // Wrap in paragraph tags
+            formatted = '<p>' + formatted + '</p>';
+            
+            return formatted;
+        }
+
+        function generateId() {
+            return Math.random().toString(36).substr(2, 9);
+        }
+
+        function ensureProperSpacing() {
+            // Ensure chat messages have proper bottom spacing
+            const chatMessages = document.getElementById('chatMessages');
+            const inputContainer = document.getElementById('inputContainer');
+            
+            if (chatMessages && inputContainer) {
+                // Add event listener for window resize
+                window.addEventListener('resize', () => {
+                    adjustSpacing();
+                });
+                
+                // Initial spacing adjustment
+                adjustSpacing();
+            }
+        }
+
+        function adjustSpacing() {
+            const chatMessages = document.getElementById('chatMessages');
+            const inputContainer = document.getElementById('inputContainer');
+            
+            if (chatMessages && inputContainer) {
+                const inputHeight = inputContainer.offsetHeight;
+                const extraPadding = 20; // Extra padding for safety
+                
+                // Set bottom padding to prevent collision
+                chatMessages.style.paddingBottom = `${inputHeight + extraPadding}px`;
+            }
+        }
+        </script>
+
+        <!-- Global Speak Function for Chatbot -->
+        <script>
+            /**
+             * Global speak function for chatbot responses
+             * Uses browser's speechSynthesis API with optimized female voice
+             * @param {string} text - The text to speak
+             * @param {Object} options - Optional settings (voice, rate, pitch, volume)
+             * @returns {Promise} - Resolves when speech is complete
+             */
+            window.speak = async function(text, options = {}) {
+                if (!text || typeof text !== 'string') {
+                    console.warn('Speak function called with invalid text:', text);
+                    return Promise.resolve();
+                }
+
+                // Default options for natural female voice
+                const defaultOptions = {
+                    voice: 'Google UK English Female',
+                    rate: 0.95,    // Slightly slower for natural speech
+                    pitch: 1.05,   // Slightly higher for pleasant female voice
+                    volume: 0.9,   // Clear and audible
+                    lang: 'en-GB'  // British English for better pronunciation
+                };
+
+                const settings = { ...defaultOptions, ...options };
+
+                return new Promise((resolve, reject) => {
+                    try {
+                        const utterance = new SpeechSynthesisUtterance(text);
+                        
+                        // Set language
+                        utterance.lang = settings.lang;
+                        
+                        // Find the best female voice
+                        const voices = speechSynthesis.getVoices();
+                        const femaleVoices = [
+                            'Google UK English Female',
+                            'Google US English Female', 
+                            'Microsoft Hazel Desktop',
+                            'Microsoft Zira Desktop',
+                            'Microsoft Susan Desktop',
+                            'Microsoft Catherine Desktop',
+                            'Samantha',
+                            'Victoria',
+                            'Alex'
+                        ];
+
+                        let selectedVoice = null;
+                        for (const voiceName of femaleVoices) {
+                            selectedVoice = voices.find(v => 
+                                v.name.includes(voiceName) || 
+                                v.name.toLowerCase().includes(voiceName.toLowerCase())
+                            );
+                            if (selectedVoice) break;
+                        }
+
+                        if (selectedVoice) {
+                            utterance.voice = selectedVoice;
+                            console.log(`Speaking with voice: ${selectedVoice.name} (${selectedVoice.lang})`);
+                        } else {
+                            console.log('Using default voice for language:', utterance.lang);
+                        }
+                        
+                        // Apply natural voice settings
+                        utterance.rate = settings.rate;
+                        utterance.pitch = settings.pitch;
+                        utterance.volume = settings.volume;
+                        
+                        // Process text for natural speech
+                        utterance.text = text
+                            .replace(/\*\*(.*?)\*\*/g, '$1')
+                            .replace(/\*(.*?)\*/g, '$1')
+                            .replace(/`(.*?)`/g, '$1')
+                            .replace(/```[\s\S]*?```/g, '')
+                            .replace(/#{1,6}\s+/g, '')
+                            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+                            .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
+                            .replace(/&/g, ' and ')
+                            .replace(/@/g, ' at ')
+                            .replace(/#/g, ' hash ')
+                            .replace(/\$/g, ' dollar ')
+                            .replace(/%/g, ' percent ')
+                            .replace(/\+/g, ' plus ')
+                            .replace(/=/g, ' equals ')
+                            .replace(/</g, ' less than ')
+                            .replace(/>/g, ' greater than ')
+                            .replace(/\|/g, ' or ')
+                            .replace(/\./g, '. ')
+                            .replace(/\?/g, '? ')
+                            .replace(/!/g, '! ')
+                            .replace(/,/g, ', ')
+                            .replace(/:/g, ': ')
+                            .replace(/;/g, '; ')
+                            .replace(/\s+/g, ' ')
+                            .trim();
+                        
+                        // Event handlers
+                        utterance.onstart = () => {
+                            console.log('Speech started:', text.substring(0, 50) + '...');
+                        };
+                        
+                        utterance.onend = () => {
+                            console.log('Speech completed');
+                            resolve();
+                        };
+                        
+                        utterance.onerror = (error) => {
+                            console.error('Speech synthesis error:', error);
+                            reject(error);
+                        };
+                        
+                        // Cancel any ongoing speech and start new one
+                        speechSynthesis.cancel();
+                        speechSynthesis.speak(utterance);
+                        
+                    } catch (error) {
+                        console.error('Error in speak function:', error);
+                        reject(error);
+                    }
+                });
+            };
+
+            // Wait for voices to load
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = function() {
+                    console.log('Voices loaded for chatbot speak function');
+                };
+            }
+        </script>
+    </body>
+</html>

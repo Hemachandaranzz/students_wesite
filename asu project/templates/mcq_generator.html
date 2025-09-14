@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCQ Generator - Lumora AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0A0A0A 0%, #1C1C1C 50%, #0F0F23 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(108, 99, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        .bg-animation::after {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -30%;
+            width: 160%;
+            height: 160%;
+            background: radial-gradient(circle, rgba(122, 92, 255, 0.08) 0%, transparent 70%);
+            animation: rotate 25s linear infinite reverse;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Header */
+        .header {
+            position: relative;
+            z-index: 10;
+            padding: 2rem 0;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(108, 99, 255, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #6C63FF, #A68CFF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-btn {
+            background: rgba(108, 99, 255, 0.1);
+            border: 1px solid rgba(108, 99, 255, 0.3);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            color: #6C63FF;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(108, 99, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 99, 255, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            z-index: 10;
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            background: rgba(12, 12, 12, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(108, 99, 255, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .upload-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin-bottom: 1rem;
+        }
+
+        .upload-subtitle {
+            color: #A0A0A0;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(108, 99, 255, 0.3);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: rgba(108, 99, 255, 0.6);
+            background: rgba(108, 99, 255, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: #6C63FF;
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #6C63FF;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            color: #E0E0E0;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: #A0A0A0;
+            font-size: 0.9rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #6C63FF 0%, #7A5CFF 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 99, 255, 0.4);
+        }
+
+        .upload-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* MCQ Count Input */
+        .mcq-count-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(108, 99, 255, 0.2);
+        }
+
+        .count-label {
+            display: block;
+            color: #E0E0E0;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .count-input {
+            width: 200px;
+            padding: 1rem;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(108, 99, 255, 0.2);
+            border-radius: 12px;
+            color: #FFFFFF;
+            font-size: 1rem;
+            font-family: inherit;
+            text-align: center;
+        }
+
+        .count-input:focus {
+            outline: none;
+            border-color: #6C63FF;
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+        }
+
+        /* Generate Button */
+        .generate-btn {
+            background: linear-gradient(135deg, #6C63FF 0%, #7A5CFF 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+            width: 100%;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 99, 255, 0.4);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Quiz Section */
+        .quiz-section {
+            display: none;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .quiz-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+
+        .quiz-progress {
+            color: #A0A0A0;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(108, 99, 255, 0.2);
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #6C63FF 0%, #7A5CFF 100%);
+            transition: width 0.3s ease;
+        }
+
+        /* Question Card */
+        .question-card {
+            background: rgba(12, 12, 12, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(108, 99, 255, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .option {
+            background: rgba(20, 20, 20, 0.8);
+            border: 2px solid rgba(108, 99, 255, 0.2);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .option:hover {
+            border-color: rgba(108, 99, 255, 0.4);
+            background: rgba(108, 99, 255, 0.05);
+        }
+
+        .option.selected {
+            border-color: #6C63FF;
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        .option.correct {
+            border-color: #4ade80;
+            background: rgba(76, 222, 128, 0.1);
+        }
+
+        .option.incorrect {
+            border-color: #f87171;
+            background: rgba(248, 113, 113, 0.1);
+        }
+
+        .option-letter {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(108, 99, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #6C63FF;
+            flex-shrink: 0;
+        }
+
+        .option.selected .option-letter {
+            background: #6C63FF;
+            color: white;
+        }
+
+        .option.correct .option-letter {
+            background: #4ade80;
+            color: white;
+        }
+
+        .option.incorrect .option-letter {
+            background: #f87171;
+            color: white;
+        }
+
+        .option-text {
+            flex: 1;
+            color: #E0E0E0;
+            font-size: 1rem;
+        }
+
+        /* Navigation */
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .nav-btn {
+            background: rgba(108, 99, 255, 0.1);
+            border: 1px solid rgba(108, 99, 255, 0.3);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            color: #6C63FF;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: rgba(108, 99, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #6C63FF 0%, #7A5CFF 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 2rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 99, 255, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            text-align: center;
+        }
+
+        .results-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 1rem;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #6C63FF, #A68CFF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .score-description {
+            color: #A0A0A0;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .results-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .action-btn {
+            background: rgba(108, 99, 255, 0.1);
+            border: 1px solid rgba(108, 99, 255, 0.3);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            color: #6C63FF;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            background: rgba(108, 99, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #6C63FF 0%, #7A5CFF 100%);
+            color: white;
+            border: none;
+        }
+
+        .action-btn.primary:hover {
+            box-shadow: 0 8px 25px rgba(108, 99, 255, 0.4);
+        }
+
+        /* Error Message */
+        .error-message {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: #FF6B6B;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 1rem;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .main-content {
+                padding: 2rem 1rem;
+            }
+            
+            .upload-section {
+                padding: 2rem;
+            }
+            
+            .question-card {
+                padding: 2rem;
+            }
+            
+            .quiz-navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .results-actions {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .question-card {
+                padding: 1.5rem;
+            }
+            
+            .option {
+                padding: 0.75rem 1rem;
+            }
+            
+            .option-letter {
+                width: 25px;
+                height: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <h1 class="page-title">MCQ Generator</h1>
+            <a href="/welcome" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Upload Section -->
+        <div class="upload-section" id="uploadSection">
+            <h2 class="upload-title">Generate MCQ Quiz</h2>
+            <p class="upload-subtitle">Upload a document or enter text to generate multiple choice questions</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">Drop your document here or click to browse</div>
+                <div class="upload-hint">Supports PDF, DOCX, and TXT files up to 16MB</div>
+                <input type="file" id="fileInput" class="file-input" accept=".pdf,.docx,.txt" />
+                <button class="upload-btn" id="uploadBtn">Choose File</button>
+            </div>
+
+            <div class="mcq-count-section">
+                <label class="count-label" for="mcqCount">How many MCQs do you want?</label>
+                <input 
+                    type="number" 
+                    id="mcqCount" 
+                    class="count-input" 
+                    min="1" 
+                    max="20" 
+                    value="5"
+                    placeholder="5"
+                >
+            </div>
+
+            <button class="generate-btn" id="generateBtn">
+                <span class="spinner" id="spinner"></span>
+                <span id="buttonText">Generate MCQs</span>
+            </button>
+
+            <div class="error-message" id="errorMessage" style="display: none;"></div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div class="quiz-section" id="quizSection">
+            <div class="quiz-header">
+                <h2 class="quiz-title">MCQ Quiz</h2>
+                <div class="quiz-progress" id="quizProgress">Question 1 of 5</div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 20%"></div>
+            </div>
+
+            <div class="question-card">
+                <div class="question-text" id="questionText">Loading question...</div>
+                <div class="options-list" id="optionsList">
+                    <!-- Options will be generated here -->
+                </div>
+            </div>
+
+            <div class="quiz-navigation">
+                <button class="nav-btn" id="prevBtn" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                    Previous
+                </button>
+                <button class="submit-btn" id="submitBtn">Submit Quiz</button>
+                <button class="nav-btn" id="nextBtn">
+                    Next
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <h2 class="results-title">Quiz Complete!</h2>
+            <div class="score-display" id="scoreDisplay">8/10</div>
+            <div class="score-description" id="scoreDescription">Great job! You scored 80%</div>
+            
+            <div class="results-actions">
+                <a href="/welcome" class="action-btn">
+                    <i class="fas fa-home"></i>
+                    Back to Dashboard
+                </a>
+                <button class="action-btn primary" id="retakeBtn">
+                    <i class="fas fa-redo"></i>
+                    Retake Quiz
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let mcqs = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let quizSubmitted = false;
+
+        // DOM elements
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const mcqCount = document.getElementById('mcqCount');
+        const generateBtn = document.getElementById('generateBtn');
+        const spinner = document.getElementById('spinner');
+        const buttonText = document.getElementById('buttonText');
+        const errorMessage = document.getElementById('errorMessage');
+        const uploadSection = document.getElementById('uploadSection');
+        const quizSection = document.getElementById('quizSection');
+        const resultsSection = document.getElementById('resultsSection');
+        const questionText = document.getElementById('questionText');
+        const optionsList = document.getElementById('optionsList');
+        const quizProgress = document.getElementById('quizProgress');
+        const progressFill = document.getElementById('progressFill');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const scoreDescription = document.getElementById('scoreDescription');
+        const retakeBtn = document.getElementById('retakeBtn');
+
+        // Event listeners
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileUpload);
+        generateBtn.addEventListener('click', generateMCQs);
+        prevBtn.addEventListener('click', previousQuestion);
+        nextBtn.addEventListener('click', nextQuestion);
+        submitBtn.addEventListener('click', submitQuiz);
+        retakeBtn.addEventListener('click', retakeQuiz);
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileUpload();
+            }
+        });
+
+        // File upload handler
+        async function handleFileUpload() {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+            if (!allowedTypes.includes(file.type)) {
+                showError('Please upload a PDF, DOCX, or TXT file');
+                return;
+            }
+
+            if (file.size > 16 * 1024 * 1024) {
+                showError('File size must be less than 16MB');
+                return;
+            }
+
+            // Show file name
+            uploadBtn.textContent = `Selected: ${file.name}`;
+            uploadBtn.style.background = 'rgba(76, 175, 80, 0.2)';
+            uploadBtn.style.borderColor = 'rgba(76, 175, 80, 0.5)';
+        }
+
+        // Generate MCQs
+        async function generateMCQs() {
+            const file = fileInput.files[0];
+            const count = parseInt(mcqCount.value) || 5;
+
+            if (!file) {
+                showError('Please upload a document first');
+                return;
+            }
+
+            if (count < 1 || count > 20) {
+                showError('Please enter a number between 1 and 20');
+                return;
+            }
+
+            // Show loading state
+            generateBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            buttonText.textContent = 'Generating MCQs...';
+            errorMessage.style.display = 'none';
+
+            try {
+                // Upload file and get content
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const uploadResponse = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!uploadResponse.ok) {
+                    throw new Error(`Upload failed: ${uploadResponse.status}`);
+                }
+                
+                const uploadData = await uploadResponse.json();
+                if (!uploadData.success) {
+                    throw new Error(uploadData.error || 'Failed to process file');
+                }
+
+                if (!uploadData.content || uploadData.content.trim().length < 50) {
+                    throw new Error('Document content is too short. Please upload a document with more content.');
+                }
+
+                // Generate MCQs using Gemini API
+                const response = await fetch('/api/generate-mcqs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        content: uploadData.content,
+                        count: count
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.success && data.mcqs && data.mcqs.length > 0) {
+                    mcqs = data.mcqs;
+                    userAnswers = new Array(mcqs.length).fill(null);
+                    showQuiz();
+                } else {
+                    throw new Error(data.message || 'No MCQs were generated. Please try with different content.');
+                }
+            } catch (error) {
+                console.error('Error generating MCQs:', error);
+                showError(`Failed to generate MCQs: ${error.message}`);
+            } finally {
+                // Reset button state
+                generateBtn.disabled = false;
+                spinner.style.display = 'none';
+                buttonText.textContent = 'Generate MCQs';
+            }
+        }
+
+        // Show quiz
+        function showQuiz() {
+            uploadSection.style.display = 'none';
+            quizSection.style.display = 'block';
+            currentQuestionIndex = 0;
+            quizSubmitted = false;
+            updateQuestion();
+        }
+
+        // Update current question
+        function updateQuestion() {
+            if (mcqs.length === 0) return;
+
+            const question = mcqs[currentQuestionIndex];
+            questionText.textContent = question.question;
+            
+            // Clear previous options
+            optionsList.innerHTML = '';
+            
+            // Create options
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.dataset.index = index;
+                
+                const letter = String.fromCharCode(65 + index); // A, B, C, D
+                
+                optionElement.innerHTML = `
+                    <div class="option-letter">${letter}</div>
+                    <div class="option-text">${option}</div>
+                `;
+                
+                // Add click handler
+                optionElement.addEventListener('click', () => selectOption(index));
+                
+                // Mark as selected if user already answered
+                if (userAnswers[currentQuestionIndex] === index) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionsList.appendChild(optionElement);
+            });
+            
+            // Update progress
+            quizProgress.textContent = `Question ${currentQuestionIndex + 1} of ${mcqs.length}`;
+            progressFill.style.width = `${((currentQuestionIndex + 1) / mcqs.length) * 100}%`;
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === mcqs.length - 1;
+            
+            // Update submit button
+            if (currentQuestionIndex === mcqs.length - 1) {
+                submitBtn.style.display = 'block';
+                nextBtn.style.display = 'none';
+            } else {
+                submitBtn.style.display = 'none';
+                nextBtn.style.display = 'flex';
+            }
+        }
+
+        // Select option
+        function selectOption(optionIndex) {
+            if (quizSubmitted) return;
+            
+            // Remove previous selection
+            optionsList.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selection to clicked option
+            optionsList.querySelector(`[data-index="${optionIndex}"]`).classList.add('selected');
+            
+            // Store answer
+            userAnswers[currentQuestionIndex] = optionIndex;
+        }
+
+        // Navigation
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                updateQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < mcqs.length - 1) {
+                currentQuestionIndex++;
+                updateQuestion();
+            }
+        }
+
+        // Submit quiz
+        function submitQuiz() {
+            quizSubmitted = true;
+            
+            // Calculate score
+            let correctAnswers = 0;
+            mcqs.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                if (userAnswer !== null && question.correct === userAnswer) {
+                    correctAnswers++;
+                }
+            });
+            
+            const score = correctAnswers;
+            const percentage = Math.round((score / mcqs.length) * 100);
+            
+            // Show results
+            showResults(score, mcqs.length, percentage);
+        }
+
+        // Show results
+        function showResults(score, total, percentage) {
+            quizSection.style.display = 'none';
+            resultsSection.style.display = 'block';
+            
+            scoreDisplay.textContent = `${score}/${total}`;
+            
+            let description = '';
+            if (percentage >= 90) {
+                description = 'Excellent! Outstanding performance!';
+            } else if (percentage >= 80) {
+                description = 'Great job! Well done!';
+            } else if (percentage >= 70) {
+                description = 'Good work! Keep it up!';
+            } else if (percentage >= 60) {
+                description = 'Not bad! Room for improvement.';
+            } else {
+                description = 'Keep studying! You can do better!';
+            }
+            
+            scoreDescription.textContent = description;
+        }
+
+        // Retake quiz
+        function retakeQuiz() {
+            resultsSection.style.display = 'none';
+            uploadSection.style.display = 'block';
+            
+            // Reset everything
+            mcqs = [];
+            userAnswers = [];
+            currentQuestionIndex = 0;
+            quizSubmitted = false;
+            
+            // Reset file input
+            fileInput.value = '';
+            uploadBtn.textContent = 'Choose File';
+            uploadBtn.style.background = '';
+            uploadBtn.style.borderColor = '';
+        }
+
+        // Error handling
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (quizSection.style.display === 'none') return;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    previousQuestion();
+                    break;
+                case 'ArrowRight':
+                    nextQuestion();
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                    const optionIndex = parseInt(e.key) - 1;
+                    if (optionIndex >= 0 && optionIndex < 4) {
+                        selectOption(optionIndex);
+                    }
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
